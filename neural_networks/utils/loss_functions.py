@@ -21,6 +21,26 @@ def mse_derivative(y_true: np.array, y_pred: np.array) -> np.array:
     return -2 * (y_true - y_pred) / len(y_true)
 
 
+def mae(y_true: np.array, y_pred: np.array) -> float:
+    """
+    Mean Absolute Error (MAE) for regression tasks
+    :param y_true: true values
+    :param y_pred: predicted values
+    :return: MAE
+    """
+    return np.mean(np.abs(y_true - y_pred))
+
+
+def mae_derivative(y_true: np.array, y_pred: np.array) -> np.array:
+    """
+    MAE derivative for regression tasks
+    :param y_true: true values
+    :param y_pred: predicted values
+    :return: np.array with derivatives for each weight
+    """
+    return -np.sign(y_true - y_pred) / len(y_true)
+
+
 def log_loss(y_true: np.array, a_pred: np.array) -> float:
     """
     LogLoss for binary classification tasks

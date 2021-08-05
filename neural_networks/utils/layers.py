@@ -1,8 +1,24 @@
+from abc import ABC, abstractmethod
+
 import numpy as np
-from neural_networks.utils.activation_functions import softmax, softmax_grad
+from utils.activation_functions import softmax, softmax_grad
 
 
-class Linear:
+class BaseLayer(ABC):
+    @abstractmethod
+    def __init__(self) -> None:
+        pass
+
+    @abstractmethod
+    def forward(self, x: np.array, grad=True) -> np.array:
+        pass
+
+    @abstractmethod
+    def backward(self, output_error: np.array, learning_rate: float) -> np.array:
+        pass
+
+
+class Linear(BaseLayer):
     """
     Linear class permorms ordinary FC layer in neural networks
     Parameters:
@@ -13,12 +29,13 @@ class Linear:
     backward(output_error, learning_rate) - performs backward pass of the layer
     """
     def __init__(self, n_input: int, n_output: int) -> None:
+        self.input = None
         self.n_input = n_input
         self.n_output = n_output
         self.w = np.random.normal(scale=np.sqrt(2 / (n_input + n_output)), size=(n_input, n_output))
         self.b = np.random.normal(scale=np.sqrt(2 / (n_input + n_output)), size=(1, n_output))
 
-    def forward(self, x: np.array) -> np.array:
+    def forward(self, x: np.array, grad=True) -> np.array:
         self.input = x
         return x.dot(self.w) + self.b
 
@@ -32,7 +49,7 @@ class Linear:
         return input_error
 
 
-class Activation:
+class Activation(BaseLayer):
     """
     Activation class is used for activation function of the FC layer
     Params:
@@ -43,10 +60,11 @@ class Activation:
     backward(output_error, learning_rate) - performs backward pass of the layer
     """
     def __init__(self, activation_function: callable, activation_derivative: callable) -> None:
+        self.input = None
         self.activation = activation_function
         self.derivative = activation_derivative
 
-    def forward(self, x: np.array) -> np.array:
+    def forward(self, x: np.array, grad=True) -> np.array:
         self.input = x
         return self.activation(x)
 
@@ -54,17 +72,37 @@ class Activation:
         return output_error * self.derivative(self.input)
 
 
-class SoftMaxLayer:
+class DropOut(BaseLayer):
+    def __init__(self, p):
+        self.input = None
+        self.p = p
+        self.q = 1 / (1 - p)
+        self.mask = None
+
+    def forward(self, x: np.array, grad=True) -> np.array:
+        self.input = x
+        if grad:
+            self.mask = np.random.uniform(0, 1, size=x.shape) > self.p
+            return self.input * self.q * self.mask
+
+        return self.input
+
+    def backward(self, output_error: np.array, learning_rate: float) -> np.array:
+        return output_error * self.q * self.mask
+
+
+class SoftMaxLayer(BaseLayer):
     """
     Class for softmax layer, it needs y_true for initialization, all the rest are the same as "Activation" class
     Deprecated
     """
     def __init__(self, activation_function: callable, activation_derivative: callable, y: np.array) -> None:
+        self.input = None
         self.activation = softmax
         self.derivative = softmax_grad
         self.y_true = y
 
-    def forward(self, x: np.array) -> np.array:
+    def forward(self, x: np.array, grad=True) -> np.array:
         self.input = x
         return self.activation(x)
 
@@ -72,7 +110,7 @@ class SoftMaxLayer:
         return output_error * self.derivative(self.input, self.y_true)
 
 
-class LinearAdam:
+class LinearAdam(BaseLayer):
     """
     LinearAdam class permorms ordinary FC layer in neural networks with optimization method ADAM
     Parameters:
@@ -83,6 +121,7 @@ class LinearAdam:
     backward(output_error, learning_rate, beta1, beta2, eps) - performs backward pass of the layer with ADAM
     """
     def __init__(self, n_input: int, n_output: int) -> None:
+        self.input = None
         self.n_input = n_input
         self.n_output = n_output
         self.w = np.random.normal(scale=np.sqrt(2 / (n_input + n_output)), size=(n_input, n_output))
@@ -94,7 +133,7 @@ class LinearAdam:
         self.EMA_adam1_b = np.zeros(shape=self.b.shape)
         self.EMA_adam2_b = np.zeros(shape=self.b.shape)
 
-    def forward(self, x: np.array) -> np.array:
+    def forward(self, x: np.array, grad=True) -> np.array:
         self.input = x
         return x.dot(self.w) + self.b
 
