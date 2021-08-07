@@ -58,7 +58,8 @@ def log_loss_derivative(y_true: np.array, a_pred: np.array) -> np.array:
     :param a_pred: predicted probabilities of each class [0, 1] (after sigmoid function or others)
     :return: np.array with derivatives
     """
-    return (-y_true / a_pred + (1 - y_true) / (1 - a_pred)) / len(y_true)
+    eps = 1e-10  # to avoid zero division
+    return (-y_true / (a_pred + eps) + (1 - y_true) / (1 - a_pred + eps)) / len(y_true)
 
 
 def cross_entropy_loss(y_true: np.array, a_pred: np.array) -> float:

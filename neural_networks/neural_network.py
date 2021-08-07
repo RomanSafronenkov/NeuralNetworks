@@ -37,7 +37,6 @@ class NeuralNetwork:
             n_epochs: int,
             x_val: np.array = None,
             y_val: np.array = None,
-            custom_metric: callable = None,
             batch_size: int = None,
             echo: bool = True
             ):
@@ -46,7 +45,7 @@ class NeuralNetwork:
         loss_print_epoch = n_epochs / 100
         idxs = np.random.permutation(len(x))
         amount_of_batches = np.ceil(len(x) / batch_size).astype(int)
-        metric_name = 'val_loss' if custom_metric is None else 'custom_metric'
+        metric_name = 'val_loss'
 
         for _ in range(n_epochs):
             train_error = 0
@@ -62,10 +61,7 @@ class NeuralNetwork:
                     output_error = layer.backward(output_error, learning_rate)
             if echo:
                 if x_val is not None and y_val is not None:
-                    if custom_metric is not None:
-                        err_val = custom_metric(y_val.reshape(-1), np.argmax(self.predict(x_val), axis=1))
-                    else:
-                        err_val = self.loss(y_val, self.predict(x_val))
+                    err_val = self.loss(y_val, self.predict(x_val))
                     if _ % loss_print_epoch == 0:
                         print('*' * 30)
                         print(f'Epoch {_}  train_loss:{train_error / amount_of_batches}, {metric_name}:{err_val}')
