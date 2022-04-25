@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 
 import numpy as np
-from utils.activation_functions import softmax, softmax_grad
+
+from neural_networks.utils.activation_functions import softmax, softmax_grad
 
 
 class BaseLayer(ABC):

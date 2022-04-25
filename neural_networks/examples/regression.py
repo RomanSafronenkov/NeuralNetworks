@@ -1,16 +1,16 @@
 import logging
+
 import numpy as np
 from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestRegressor
 
-from utils.layers import Linear, Activation, DropOut
-from utils.loss_functions import mse, mse_derivative, mae, mae_derivative
-from utils.activation_functions import relu, relu_derivative
-from utils.metrics import r2_score
-from utils.preprocessing import StandardScaler
-from utils.preprocessing_utils import train_test_split
-from neural_network import NeuralNetwork
-
+from neural_networks.neural_network import NeuralNetwork
+from neural_networks.utils.activation_functions import relu, relu_derivative
+from neural_networks.utils.layers import Linear, Activation, DropOut
+from neural_networks.utils.loss_functions import mae, mae_derivative, mse_derivative, mse
+from neural_networks.utils.metrics import r2_score
+from neural_networks.utils.preprocessing import StandardScaler
+from neural_networks.utils.preprocessing_utils import train_test_split
 
 logging.basicConfig(format='[%(asctime)s] - [%(levelname)s] - %(message)s',
                     level=logging.INFO)
@@ -41,7 +41,6 @@ regression_nn.add_layer(Activation(relu, relu_derivative))
 regression_nn.add_layer(DropOut(0.3))
 regression_nn.add_layer(Linear(32, 1))
 
-
 regression_nn.fit(
     x_train,
     y_train,
@@ -62,7 +61,7 @@ sklearn_forest.fit(x_train, y_train.ravel())
 skl_preds = sklearn_forest.predict(x_val)
 
 _logger.info(f'RandomForestRegressor using MAE:\nmse={mse(y_val, skl_preds)}, mae={mae(y_val, skl_preds)}, '
-      f'r2={r2_score(y_val, skl_preds)}')
+             f'r2={r2_score(y_val, skl_preds)}')
 
 #  let's use MSE as a loss function
 regression_nn = NeuralNetwork(42)
@@ -109,14 +108,14 @@ regression_nn.fit(
 
 preds = regression_nn.predict(x_val)
 _logger.info(f'Same NeuralNetwork using MSE and DropOut:\nmse={mse(y_val, preds)}, mae={mae(y_val, preds)},'
-      f' r2={r2_score(y_val, preds)}')
+             f' r2={r2_score(y_val, preds)}')
 
 # compare with sklearn's forest
 sklearn_forest = RandomForestRegressor(criterion='mse')
 sklearn_forest.fit(x_train, y_train.ravel())
 skl_preds = sklearn_forest.predict(x_val)
 _logger.info(f'RandomForestRegressor using MSE:\nmse={mse(y_val, skl_preds)}, mae={mae(y_val, skl_preds)}, '
-      f'r2={r2_score(y_val, skl_preds)}')
+             f'r2={r2_score(y_val, skl_preds)}')
 
 # ols with gradient descent
 regression_nn = NeuralNetwork(42)

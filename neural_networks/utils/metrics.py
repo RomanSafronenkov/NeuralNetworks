@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils.loss_functions import mse
+from neural_networks.utils.loss_functions import mse
 
 
 def r2_score(y_true: np.array, y_pred: np.array) -> float:
@@ -12,7 +12,7 @@ def r2_score(y_true: np.array, y_pred: np.array) -> float:
     """
     y_true = y_true.ravel()
     y_pred = y_pred.ravel()
-    return 1 - mse(y_true, y_pred) / np.mean((y_true - np.mean(y_true))**2)
+    return 1 - mse(y_true, y_pred) / np.mean((y_true - np.mean(y_true)) ** 2)
 
 
 def accuracy_score(y_true: np.array, y_pred: np.array) -> float:

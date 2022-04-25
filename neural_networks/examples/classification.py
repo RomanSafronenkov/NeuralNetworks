@@ -1,15 +1,15 @@
 import logging
+
 import numpy as np
 from sklearn.datasets import load_breast_cancer
 
-from utils.layers import Linear, Activation, DropOut
-from utils.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
-from utils.activation_functions import relu, relu_derivative
-from utils.metrics import accuracy_score
-from utils.preprocessing import StandardScaler
-from utils.preprocessing_utils import train_test_split
-from neural_network import NeuralNetwork
-
+from neural_networks.neural_network import NeuralNetwork
+from neural_networks.utils.activation_functions import relu, relu_derivative
+from neural_networks.utils.layers import Linear, Activation, DropOut
+from neural_networks.utils.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
+from neural_networks.utils.metrics import accuracy_score
+from neural_networks.utils.preprocessing import StandardScaler
+from neural_networks.utils.preprocessing_utils import train_test_split
 
 logging.basicConfig(format='[%(asctime)s] - [%(levelname)s] - %(message)s',
                     level=logging.INFO)
