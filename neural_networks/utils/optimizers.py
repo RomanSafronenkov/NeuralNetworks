@@ -24,10 +24,12 @@ class SGD(BaseOptimizer):
     learning_rate (float) – learning rate
     p (float, optional) – momentum factor (default: 0)
     """
-    def __init__(self, p: float = 0, learning_rate: float = 1e-3) -> None:
+
+    def __init__(self, p: float = 0, learning_rate: float = 1e-3, weight_decay: float = 0) -> None:
         self.p = p
         self.learning_rate = learning_rate
         self.momentum = None
+        self.weight_decay = weight_decay
 
         self.weight = None
 
@@ -37,6 +39,7 @@ class SGD(BaseOptimizer):
 
     def step(self, grad: np.array) -> None:
         assert self.weight is not None, 'You should set the weight'
+        grad = grad.copy() + self.weight_decay * self.weight
         self.momentum = self.p * self.momentum + grad
         self.weight -= self.learning_rate * self.momentum
 
@@ -52,12 +55,14 @@ class ADAM(BaseOptimizer):
     coefficients used for computing running averages of gradient and its square (default: (0.9, 0.999))
     eps (float, optional) – term added to the denominator to improve numerical stability (default: 1e-8)
     """
+
     def __init__(self, beta1: float = 0.9, beta2: float = 0.999, eps: float = 1e-8,
-                 learning_rate: float = 3e-4) -> None:
+                 learning_rate: float = 3e-4, weight_decay: float = 0) -> None:
         self.beta1 = beta1
         self.beta2 = beta2
         self.eps = eps
         self.learning_rate = learning_rate
+        self.weight_decay = weight_decay
 
         self.EMA1 = None
         self.EMA2 = None
@@ -71,6 +76,7 @@ class ADAM(BaseOptimizer):
 
     def step(self, grad: np.array) -> np.array:
         assert self.weight is not None, 'You should set the weight'
+        grad = grad.copy() + self.weight_decay * self.weight
         self.EMA1 = (1 - self.beta1) * grad + self.beta1 * self.EMA1
         self.EMA2 = (1 - self.beta2) * grad ** 2 + self.beta2 * self.EMA2
         self.weight -= self.learning_rate * self.EMA1 / (np.sqrt(self.EMA2) + self.eps)

@@ -65,7 +65,7 @@ _logger.info(f'RandomForestRegressor using MAE:\nmse={mse(y_val, skl_preds)}, ma
              f'r2={r2_score(y_val, skl_preds)}')
 
 #  let's use MSE as a loss function
-optimizer = SGD(p=0.4, learning_rate=0.001)
+optimizer = SGD(p=0.8, learning_rate=0.001, weight_decay=0.01)
 regression_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 regression_nn.use(mse, mse_derivative)  # loss function
 regression_nn.add_layer(Linear(13, 64))
@@ -80,7 +80,7 @@ regression_nn.fit(
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
-    echo=False
+    echo=True
 )
 
 preds = regression_nn.predict(x_val)
