@@ -4,11 +4,11 @@ import numpy as np
 from sklearn.datasets import load_breast_cancer
 
 from neural_networks.neural_network import NeuralNetwork
-from neural_networks.utils.activation_functions import relu, relu_derivative
-from neural_networks.utils.layers import Linear, Activation, DropOut
-from neural_networks.utils.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
+from neural_networks.nn.activation_functions import relu, relu_derivative
+from neural_networks.nn.layers import Linear, Activation, DropOut
+from neural_networks.nn.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
+from neural_networks.nn.optimizers import SGD
 from neural_networks.utils.metrics import accuracy_score
-from neural_networks.utils.optimizers import SGD
 from neural_networks.utils.preprocessing import StandardScaler
 from neural_networks.utils.preprocessing_utils import train_test_split
 

@@ -5,11 +5,11 @@ from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestRegressor
 
 from neural_networks.neural_network import NeuralNetwork
-from neural_networks.utils.activation_functions import relu, relu_derivative
-from neural_networks.utils.layers import Linear, Activation, DropOut
-from neural_networks.utils.loss_functions import mae, mae_derivative, mse_derivative, mse
+from neural_networks.nn.activation_functions import relu, relu_derivative
+from neural_networks.nn.layers import Linear, Activation, DropOut
+from neural_networks.nn.loss_functions import mae, mae_derivative, mse_derivative, mse
+from neural_networks.nn.optimizers import SGD, ADAM
 from neural_networks.utils.metrics import r2_score
-from neural_networks.utils.optimizers import SGD, ADAM
 from neural_networks.utils.preprocessing import StandardScaler
 from neural_networks.utils.preprocessing_utils import train_test_split
 
@@ -80,7 +80,7 @@ regression_nn.fit(
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
-    echo=True
+    echo=False
 )
 
 preds = regression_nn.predict(x_val)

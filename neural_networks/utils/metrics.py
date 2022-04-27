@@ -1,6 +1,6 @@
 import numpy as np
 
-from neural_networks.utils.loss_functions import mse
+from neural_networks.nn.loss_functions import mse
 
 
 def r2_score(y_true: np.array, y_pred: np.array) -> float:
