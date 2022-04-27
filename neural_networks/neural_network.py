@@ -10,18 +10,23 @@ class NeuralNetwork:
     predict(x) - forward pass through the network
     fit(x, y, learning_rate, n_epochs, x_val, y_val, custom_metric, batch_size) - fit the network
     """
-    def __init__(self, random_state=None) -> None:
+
+    def __init__(self, optimizer, random_state=None) -> None:
         self.layers = []
         self.loss = None
         self.loss_derivative = None
         if random_state:
             np.random.seed(random_state)
+        self.optimizer = optimizer
 
     def use(self, loss: callable, loss_derivative: callable) -> None:
         self.loss = loss
         self.loss_derivative = loss_derivative
 
     def add_layer(self, layer) -> None:
+        if 'set_optimizer' in layer.__dir__():
+            layer.set_optimizer(self.optimizer)
+
         self.layers.append(layer)
 
     def predict(self, x: np.array, grad: bool = False) -> np.array:
@@ -33,7 +38,6 @@ class NeuralNetwork:
     def fit(self,
             x: np.array,
             y: np.array,
-            learning_rate: float,
             n_epochs: int,
             x_val: np.array = None,
             y_val: np.array = None,
@@ -58,7 +62,7 @@ class NeuralNetwork:
                 train_error += self.loss(y_batch, preds)
                 output_error = self.loss_derivative(y_batch, preds)
                 for layer in reversed(self.layers):
-                    output_error = layer.backward(output_error, learning_rate)
+                    output_error = layer.backward(output_error)
             if echo:
                 if x_val is not None and y_val is not None:
                     err_val = self.loss(y_val, self.predict(x_val))

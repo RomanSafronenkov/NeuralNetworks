@@ -8,6 +8,7 @@ from neural_networks.utils.activation_functions import relu, relu_derivative
 from neural_networks.utils.layers import Linear, Activation, DropOut
 from neural_networks.utils.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
 from neural_networks.utils.metrics import accuracy_score
+from neural_networks.utils.optimizers import SGD
 from neural_networks.utils.preprocessing import StandardScaler
 from neural_networks.utils.preprocessing_utils import train_test_split
 
@@ -31,7 +32,8 @@ x_train = scaler.fit_transform(x_train)
 x_val = scaler.transform(x_val)
 
 # create NN with log_loss for binary classification
-classification_nn = NeuralNetwork()
+optimizer = SGD(p=0.5, learning_rate=0.01)
+classification_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 classification_nn.use(cross_entropy_loss, cross_entropy_loss_derivative)
 classification_nn.add_layer(Linear(x_train.shape[1], 60))
 classification_nn.add_layer(Activation(relu, relu_derivative))
@@ -42,7 +44,6 @@ classification_nn.add_layer(Linear(30, 2))
 classification_nn.fit(
     x=x_train,
     y=y_train,
-    learning_rate=0.01,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
@@ -54,19 +55,19 @@ _logger.info(f'CrossEntropyLoss NN\naccuracy score= {accuracy_score(y_val, preds
 
 # let's try the same NN but with dropout
 
-classification_nn = NeuralNetwork()
+classification_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 classification_nn.use(cross_entropy_loss, cross_entropy_loss_derivative)
 classification_nn.add_layer(Linear(x_train.shape[1], 60))
 classification_nn.add_layer(Activation(relu, relu_derivative))
-classification_nn.add_layer(DropOut(0.3))
+classification_nn.add_layer(DropOut(0.5))
 classification_nn.add_layer(Linear(60, 30))
 classification_nn.add_layer(Activation(relu, relu_derivative))
+classification_nn.add_layer(DropOut(0.6))
 classification_nn.add_layer(Linear(30, 2))
 
 classification_nn.fit(
     x=x_train,
     y=y_train,
-    learning_rate=0.01,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,

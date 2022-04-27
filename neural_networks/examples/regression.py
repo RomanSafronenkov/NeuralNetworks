@@ -9,6 +9,7 @@ from neural_networks.utils.activation_functions import relu, relu_derivative
 from neural_networks.utils.layers import Linear, Activation, DropOut
 from neural_networks.utils.loss_functions import mae, mae_derivative, mse_derivative, mse
 from neural_networks.utils.metrics import r2_score
+from neural_networks.utils.optimizers import SGD, ADAM
 from neural_networks.utils.preprocessing import StandardScaler
 from neural_networks.utils.preprocessing_utils import train_test_split
 
@@ -31,7 +32,8 @@ x_train = scaler.fit_transform(x_train)
 x_val = scaler.transform(x_val)
 
 # initialize NN with mae and some dropout layers
-regression_nn = NeuralNetwork(42)
+optimizer = SGD(p=0.3, learning_rate=0.1)
+regression_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 regression_nn.use(mae, mae_derivative)  # loss function
 regression_nn.add_layer(Linear(13, 64))
 regression_nn.add_layer(Activation(relu, relu_derivative))
@@ -44,7 +46,6 @@ regression_nn.add_layer(Linear(32, 1))
 regression_nn.fit(
     x_train,
     y_train,
-    learning_rate=0.001,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
@@ -64,7 +65,8 @@ _logger.info(f'RandomForestRegressor using MAE:\nmse={mse(y_val, skl_preds)}, ma
              f'r2={r2_score(y_val, skl_preds)}')
 
 #  let's use MSE as a loss function
-regression_nn = NeuralNetwork(42)
+optimizer = SGD(p=0.4, learning_rate=0.001)
+regression_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 regression_nn.use(mse, mse_derivative)  # loss function
 regression_nn.add_layer(Linear(13, 64))
 regression_nn.add_layer(Activation(relu, relu_derivative))
@@ -75,7 +77,6 @@ regression_nn.add_layer(Linear(32, 1))
 regression_nn.fit(
     x_train,
     y_train,
-    learning_rate=0.001,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
@@ -86,7 +87,8 @@ preds = regression_nn.predict(x_val)
 _logger.info(f'NeuralNetwork using MSE:\nmse={mse(y_val, preds)}, mae={mae(y_val, preds)}, r2={r2_score(y_val, preds)}')
 
 # let's try the same NN but with dropout to see benefits of its usage
-regression_nn = NeuralNetwork(42)
+optimizer = ADAM(learning_rate=1e-3)
+regression_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 regression_nn.use(mse, mse_derivative)  # loss function
 regression_nn.add_layer(Linear(13, 64))
 regression_nn.add_layer(Activation(relu, relu_derivative))
@@ -99,7 +101,6 @@ regression_nn.add_layer(Linear(32, 1))
 regression_nn.fit(
     x_train,
     y_train,
-    learning_rate=0.001,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
@@ -118,14 +119,14 @@ _logger.info(f'RandomForestRegressor using MSE:\nmse={mse(y_val, skl_preds)}, ma
              f'r2={r2_score(y_val, skl_preds)}')
 
 # ols with gradient descent
-regression_nn = NeuralNetwork(42)
+optimizer = SGD(p=0, learning_rate=0.1)
+regression_nn = NeuralNetwork(optimizer=optimizer, random_state=42)
 regression_nn.use(mse, mse_derivative)  # loss function
 regression_nn.add_layer(Linear(13, 1))
 
 regression_nn.fit(
     x_train,
     y_train,
-    learning_rate=0.1,
     n_epochs=10000,
     x_val=x_val,
     y_val=y_val,
