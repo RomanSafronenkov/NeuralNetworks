@@ -11,6 +11,9 @@ class BaseLayer(ABC):
     def __init__(self) -> None:
         pass
 
+    def __call__(self, x: np.array, grad: bool = True) -> np.array:
+        return self.forward(x, grad)
+
     @abstractmethod
     def forward(self, x: np.array, grad: bool = True) -> np.array:
         pass
@@ -32,6 +35,7 @@ class Linear(BaseLayer):
     """
 
     def __init__(self, n_input: int, n_output: int) -> None:
+        super().__init__()
         self.input = None
         self.n_input = n_input
         self.n_output = n_output
@@ -75,6 +79,7 @@ class Activation(BaseLayer):
     """
 
     def __init__(self, activation_function: callable, activation_derivative: callable) -> None:
+        super().__init__()
         self.input = None
         self.activation = activation_function
         self.derivative = activation_derivative
@@ -89,6 +94,7 @@ class Activation(BaseLayer):
 
 class DropOut(BaseLayer):
     def __init__(self, p):
+        super().__init__()
         self.input = None
         self.p = p
         self.q = 1 / (1 - p)
@@ -113,14 +119,45 @@ class SoftMaxLayer(BaseLayer):
     """
 
     def __init__(self, activation_function: callable, activation_derivative: callable, y: np.array) -> None:
+        super().__init__()
         self.input = None
         self.activation = softmax
         self.derivative = softmax_grad
         self.y_true = y
 
-    def forward(self, x: np.array, grad=True) -> np.array:
+    def forward(self, x: np.array, grad: bool = True) -> np.array:
         self.input = x
         return self.activation(x)
 
     def backward(self, output_error: np.array) -> np.array:
         return output_error * self.derivative(self.input, self.y_true)
+
+
+class BatchNorm(BaseLayer):
+    """
+    TODO
+    """
+
+    def __init__(self):
+        pass
+
+    def forward(self, x: np.array, grad: bool = True) -> np.array:
+        pass
+
+    def backward(self, output_error: np.array) -> np.array:
+        pass
+
+
+class Convolution2D(BaseLayer):
+    """
+    TODO
+    """
+
+    def __init__(self):
+        pass
+
+    def forward(self, x: np.array, grad: bool = True) -> np.array:
+        pass
+
+    def backward(self, output_error: np.array) -> np.array:
+        pass
