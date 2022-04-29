@@ -7,8 +7,8 @@ class NeuralNetwork:
     Methods:
     use(loss, loss_derivative) - set the loss function and it's derivative
     add_layer(layer) - constructor of the NN, add one of the layers described above
-    predict(x) - forward pass through the network
-    fit(x, y, learning_rate, n_epochs, x_val, y_val, custom_metric, batch_size) - fit the network
+    predict(x, grad) - forward pass through the network
+    fit(x, y, n_epochs, x_val, y_val, batch_size, echo) - fit the network
     """
 
     def __init__(self, optimizer, random_state=None) -> None:
@@ -47,11 +47,12 @@ class NeuralNetwork:
 
         batch_size = batch_size or len(x)
         loss_print_epoch = n_epochs / 100
-        idxs = np.random.permutation(len(x))
         amount_of_batches = np.ceil(len(x) / batch_size).astype(int)
         metric_name = 'val_loss'
 
         for _ in range(n_epochs):
+            # it is good to do permutations in each epoch
+            idxs = np.random.permutation(len(x))
             train_error = 0
             for batch_idx in range(amount_of_batches):
                 batch_slice = idxs[batch_idx * batch_size:batch_idx * batch_size + batch_size]

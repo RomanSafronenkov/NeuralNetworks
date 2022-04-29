@@ -28,6 +28,7 @@ class Linear(BaseLayer):
     n_input - size of input neurons
     n_output - size of output neurons
     Methods:
+    set_optimizer(optimizer) - is used for setting an optimizer for gradient descent
     forward(x) - performs forward pass of the layer
     backward(output_error, learning_rate) - performs backward pass of the layer
     """
@@ -91,6 +92,12 @@ class Activation(BaseLayer):
 
 
 class DropOut(BaseLayer):
+    """
+    DropOut class is used for DropOut layer
+    p – probability of an element to be zeroed. Default: 0.5
+
+    https://jmlr.org/papers/volume15/srivastava14a/srivastava14a.pdf
+    """
     def __init__(self, p):
         super().__init__()
         self.input = None
@@ -118,6 +125,8 @@ class BatchNorm(BaseLayer):
     momentum – the value used for the running_mean and running_var computation.
     Can be set to None for cumulative moving average (i.e. simple average). Default: 0.1
     affine – a boolean value that when set to True, this module has learnable affine parameters. Default: True
+
+    https://arxiv.org/pdf/1502.03167.pdf'
     """
 
     def __init__(self, num_features, num_dims, eps=1e-05, momentum=0.1, affine=True):
@@ -163,6 +172,8 @@ class BatchNorm(BaseLayer):
                 mean = x.mean(axis=0)
                 var = ((x - mean) ** 2).mean(axis=0)
             else:
+                # TODO
+                # for convolution nns
                 raise NotImplementedError
 
             self.x_centered = (x - mean)
@@ -179,6 +190,13 @@ class BatchNorm(BaseLayer):
 
         gamma_grad = np.sum(output_error * self.x_centered / self.x_std, axis=0)
         batch_size = output_error.shape[0]
+
+        # following lines are got from the original paper, they are the same as final version for input error
+        #
+        # dldx = output_error * self.gamma
+        # dldsigma2 = np.sum(dldx * self.x_centered * (-1/2) * (self.x_std ** -3), axis=0)
+        # dldmu = np.sum((dldx * (-1/self.x_std)), axis=0) + dldsigma2 * np.sum(-2*self.x_centered, axis=0) / batch_size
+        # input_error = dldx / self.x_std + dldsigma2 * 2 * self.x_centered / batch_size + dldmu / batch_size
 
         input_error = (1 / batch_size) * self.gamma / self.x_std * \
                       (batch_size * output_error - np.sum(output_error, axis=0) -
