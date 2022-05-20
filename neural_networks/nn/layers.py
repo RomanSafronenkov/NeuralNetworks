@@ -143,10 +143,13 @@ class BatchNorm(BaseLayer):
 
         if num_dims == 2:
             shape = (1, num_features)
+            self.axis = 0
         elif num_dims == 4:
             shape = (1, num_features, 1, 1)
+            self.axis = (0, 2, 3)
         else:
             raise ValueError("num_dims must be in (2, 4)")
+
         self.gamma = np.ones(shape=shape)
         self.beta = np.zeros(shape=shape)
         self.gamma_optimizer = None
@@ -170,13 +173,9 @@ class BatchNorm(BaseLayer):
             x_hat = self.x_centered / self.x_std
         else:
             assert len(x.shape) in (2, 4)
-            if len(x.shape) == 2:
-                mean = x.mean(axis=0)
-                var = ((x - mean) ** 2).mean(axis=0)
-            else:
-                # TODO
-                # for convolution nns
-                raise NotImplementedError
+
+            mean = x.mean(axis=self.axis, keepdims=True)
+            var = ((x - mean) ** 2).mean(axis=self.axis, keepdims=True)
 
             self.x_centered = (x - mean)
             self.x_std = np.sqrt(var + self.eps)
@@ -190,7 +189,7 @@ class BatchNorm(BaseLayer):
     def backward(self, output_error: np.array) -> np.array:
         assert self.gamma_optimizer is not None, 'You should set an optimizer'
 
-        gamma_grad = np.sum(output_error * self.x_centered / self.x_std, axis=0)
+        gamma_grad = np.sum(output_error * self.x_centered / self.x_std, axis=self.axis, keepdims=True)
         batch_size = output_error.shape[0]
 
         # following lines are got from the original paper, they are the same as final version for input error
@@ -201,12 +200,13 @@ class BatchNorm(BaseLayer):
         # input_error = dldx / self.x_std + dldsigma2 * 2 * self.x_centered / batch_size + dldmu / batch_size
 
         input_error = (1 / batch_size) * self.gamma / self.x_std * \
-                      (batch_size * output_error - np.sum(output_error, axis=0) -
-                       self.x_centered / self.x_std ** 2 * np.sum(output_error * self.x_centered, axis=0))
+                      (batch_size * output_error - np.sum(output_error, axis=self.axis, keepdims=True) -
+                       self.x_centered / self.x_std ** 2 * np.sum(output_error * self.x_centered, axis=self.axis,
+                                                                  keepdims=True))
 
         self.gamma = self.gamma_optimizer.step(gamma_grad)
         if self.affine:
-            beta_grad = np.sum(output_error, axis=0)
+            beta_grad = np.sum(output_error, axis=self.axis, keepdims=True)
             self.beta = self.beta_optimizer.step(beta_grad)
         return input_error
 
