@@ -18,6 +18,7 @@ class NeuralNetwork:
         if random_state:
             np.random.seed(random_state)
         self.optimizer = optimizer
+        self.best_model = None
 
     def use(self, loss: callable, loss_derivative: callable) -> None:
         self.loss = loss
@@ -50,29 +51,33 @@ class NeuralNetwork:
         amount_of_batches = np.ceil(len(x) / batch_size).astype(int)
         metric_name = 'val_loss'
 
-        for _ in range(n_epochs):
-            # it is good to do permutations in each epoch
-            idxs = np.random.permutation(len(x))
-            train_error = 0
-            for batch_idx in range(amount_of_batches):
-                batch_slice = idxs[batch_idx * batch_size:batch_idx * batch_size + batch_size]
-                x_batch = x[batch_slice]
-                y_batch = y[batch_slice]
+        try:
+            for _ in range(n_epochs):
+                # it is good to do permutations in each epoch
+                idxs = np.random.permutation(len(x))
+                train_error = 0
+                for batch_idx in range(amount_of_batches):
+                    batch_slice = idxs[batch_idx * batch_size:batch_idx * batch_size + batch_size]
+                    x_batch = x[batch_slice]
+                    y_batch = y[batch_slice]
 
-                preds = self.predict(x_batch, grad=True)
-                train_error += self.loss(y_batch, preds)
-                output_error = self.loss_derivative(y_batch, preds)
-                for layer in reversed(self.layers):
-                    output_error = layer.backward(output_error)
-            if echo:
-                if x_val is not None and y_val is not None:
-                    err_val = self.loss(y_val, self.predict(x_val))
-                    if _ % loss_print_epoch == 0:
-                        print('*' * 30)
-                        print(f'Epoch {_}  train_loss:{train_error / amount_of_batches}, {metric_name}:{err_val}')
-                else:
-                    if _ % loss_print_epoch == 0:
-                        print('*' * 30)
-                        print(f'Epoch {_}  train_loss:{train_error / amount_of_batches}')
+                    preds = self.predict(x_batch, grad=True)
+                    train_error += self.loss(y_batch, preds)
+                    output_error = self.loss_derivative(y_batch, preds)
+                    for layer in reversed(self.layers):
+                        output_error = layer.backward(output_error)
+                if echo:
+                    if x_val is not None and y_val is not None:
+                        err_val = self.loss(y_val, self.predict(x_val))
+                        if _ % loss_print_epoch == 0:
+                            print('*' * 30)
+                            print(f'Epoch {_}  train_loss:{train_error / amount_of_batches}, {metric_name}:{err_val}')
+                    else:
+                        if _ % loss_print_epoch == 0:
+                            print('*' * 30)
+                            print(f'Epoch {_}  train_loss:{train_error / amount_of_batches}')
+        except KeyboardInterrupt:
+            print('Interrupted by user')
+            return self
 
         return self
