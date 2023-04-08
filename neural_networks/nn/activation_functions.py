@@ -46,6 +46,20 @@ def relu_derivative(z: Union[np.array, float, int, list]) -> np.array:
     return (z > 0).astype(int)
 
 
+def leaky_relu(z: Union[np.array, float, int, list], alpha=0.2) -> np.array:
+    """
+    Leaky ReLU function
+    """
+    return np.where(z >= 0, z, alpha * z)
+
+
+def leaky_relu_derivative(z: Union[np.array, float, int, list], alpha=0.2) -> np.array:
+    """
+    Leaky ReLU function derivative
+    """
+    return np.where(z >= 0, 1, alpha)
+
+
 def softmax(z: np.array) -> np.array:
     """
     Softmax function
