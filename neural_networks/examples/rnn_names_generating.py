@@ -80,9 +80,10 @@ rnnunit = train_rnn_for_names(rnnunit)
 lstm_unit = LSTM(
     n_input=len(token_to_id),
     n_hidden=64,
-    bptt_trunc=15
+    n_output=len(token_to_id),
+    bptt_trunc=20
 )
-lstm_unit.set_optimizer(ADAM(learning_rate=0.0001))
+lstm_unit.set_optimizer(ADAM(learning_rate=0.001))
 print('FITTING LSTM...')
 lstm_unit = train_rnn_for_names(lstm_unit)
 
