@@ -5,13 +5,9 @@ from sklearn.datasets import load_boston
 from sklearn.ensemble import RandomForestRegressor
 
 from neural_networks.neural_network import NeuralNetwork
-from neural_networks.nn.activation_functions import relu, relu_derivative
-from neural_networks.nn.layers import Linear, Activation, DropOut
-from neural_networks.nn.loss_functions import mae, mae_derivative, mse_derivative, mse
-from neural_networks.nn.optimizers import SGD, ADAM
-from neural_networks.utils.metrics import r2_score
-from neural_networks.utils.preprocessing import StandardScaler
-from neural_networks.utils.preprocessing_utils import train_test_split
+from neural_networks.nn import relu, relu_derivative, Linear, Activation, DropOut, mae, mae_derivative, mse_derivative, \
+    mse, SGD, ADAM
+from neural_networks.utils import r2_score, StandardScaler, train_test_split
 
 logging.basicConfig(format='[%(asctime)s] - [%(levelname)s] - %(message)s',
                     level=logging.INFO)

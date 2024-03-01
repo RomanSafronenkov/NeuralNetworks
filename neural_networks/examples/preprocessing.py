@@ -1,8 +1,7 @@
 import numpy as np
-
 from sklearn.preprocessing import StandardScaler as SklSS, MinMaxScaler as SklMM
-from neural_networks.utils.preprocessing import StandardScaler as MySS, MinMaxScaler as MyMM
-from neural_networks.utils.preprocessing_utils import train_test_split
+
+from neural_networks.utils import StandardScaler as MySS, MinMaxScaler as MyMM, train_test_split
 
 data = np.array([
     [1, 2, 3],

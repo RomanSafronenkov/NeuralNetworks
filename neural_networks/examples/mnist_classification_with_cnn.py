@@ -4,12 +4,9 @@ import numpy as np
 from sklearn.datasets import load_digits
 
 from neural_networks.neural_network import NeuralNetwork
-from neural_networks.nn.activation_functions import relu, relu_derivative
-from neural_networks.nn.layers import Conv2D, MaxPool2D, Activation, Ravel, Linear
-from neural_networks.nn.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
-from neural_networks.nn.optimizers import ADAM
-from neural_networks.utils.metrics import accuracy_score
-from neural_networks.utils.preprocessing_utils import train_test_split
+from neural_networks.nn import relu, relu_derivative, Conv2D, MaxPool2D, Activation, Ravel, Linear, cross_entropy_loss, \
+    cross_entropy_loss_derivative, ADAM
+from neural_networks.utils import accuracy_score, train_test_split
 
 logging.basicConfig(format='[%(asctime)s] - [%(levelname)s] - %(message)s',
                     level=logging.INFO)

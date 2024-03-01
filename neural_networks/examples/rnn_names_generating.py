@@ -2,11 +2,9 @@ import copy
 
 import numpy as np
 
+from neural_networks.nn import RNNCell, RNNUnit, LSTM, cross_entropy_loss, cross_entropy_loss_derivative, ADAM
 from neural_networks.nn.activation_functions import tanh, tanh_derivative
-from neural_networks.nn.layers import RNNCell, RNNUnit, LSTM
-from neural_networks.nn.loss_functions import cross_entropy_loss, cross_entropy_loss_derivative
-from neural_networks.nn.optimizers import ADAM
-from neural_networks.utils.text import to_matrix, generate_sample
+from neural_networks.utils import to_matrix, generate_sample
 
 np.random.seed(42)
 
